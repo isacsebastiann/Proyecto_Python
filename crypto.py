@@ -1,26 +1,27 @@
 from cryptography.fernet import Fernet
 import os
 
-def generar_clave():
-    clave = Fernet.generate_key()
-    with open("clave.key", "wb") as clave_file:
-        clave_file.write(clave)
+def generate_key():
+    key = Fernet.generate_key()
+    with open("key.key", "wb") as key_file:
+        key_file.write(key)
 
-def cargar_clave():
-    if not os.path.exists("clave.key"):
-        generar_clave()
-    return open("clave.key", "rb").read()
+def load_key():
+    if not os.path.exists("key.key"):
+        generate_key()
+    return open("key.key", "rb").read()
 
-def inicializar_fernet():
-    clave = cargar_clave()
-    return Fernet(clave)
+def initialize_fernet():
+    key = load_key()
+    return Fernet(key)
 
-def cifrar_contrasena(contrasena):
-    f = inicializar_fernet()
-    contrasena_cifrada = f.encrypt(contrasena.encode())
-    return contrasena_cifrada
+def encrypt_password(password):
+    f = initialize_fernet()
+    encrypted_password = f.encrypt(password.encode())
+    return encrypted_password
 
-def descifrar_contrasena(contrasena_cifrada):
-    f = inicializar_fernet()
-    contrasena_descifrada = f.decrypt(contrasena_cifrada).decode()
-    return contrasena_descifrada
+def decrypt_password(encrypted_password):
+    f = initialize_fernet()
+    decrypted_password = f.decrypt(encrypted_password).decode()
+    return decrypted_password
+

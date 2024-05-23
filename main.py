@@ -1,15 +1,15 @@
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import urllib.parse
 import os
-from db import inicializar_db, agregar_contrasena, obtener_contrasenas
-from crypto import cifrar_contrasena, descifrar_contrasena
+from db import initialize_db, add_password, get_passwords
+from crypto import encrypt_password, decrypt_password
 
 class RequestHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/':
             self.path = '/index.html'
         elif self.path == '/listar':
-            contrasenas = obtener_contrasenas()
+            contrasenas = get_passwords()
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
@@ -17,7 +17,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
             self.wfile.write(bytes("<h1>Listado de Contraseñas</h1><table border='1'>", "utf-8"))
             self.wfile.write(bytes("<tr><th>Servicio</th><th>Usuario</th><th>Contraseña</th></tr>", "utf-8"))
             for servicio, usuario, contrasena_cifrada in contrasenas:
-                contrasena = descifrar_contrasena(contrasena_cifrada)
+                contrasena = decrypt_password(contrasena_cifrada)
                 self.wfile.write(bytes(f"<tr><td>{servicio}</td><td>{usuario}</td><td>{contrasena}</td></tr>", "utf-8"))
             self.wfile.write(bytes("</table><br><a href='/'>Volver a inicio</a></body></html>", "utf-8"))
             return
@@ -35,8 +35,8 @@ class RequestHandler(SimpleHTTPRequestHandler):
             servicio = fields.get('servicio', [''])[0]
             usuario = fields.get('usuario', [''])[0]
             contrasena = fields.get('contrasena', [''])[0]
-            contrasena_cifrada = cifrar_contrasena(contrasena)
-            agregar_contrasena(servicio, usuario, contrasena_cifrada)
+            contrasena_cifrada = encrypt_password(contrasena)
+            add_password(servicio, usuario, contrasena_cifrada)
             self.send_response(301)
             self.send_header('Location', '/listar')
             self.end_headers()
@@ -50,7 +50,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     os.chdir('templates')
-    inicializar_db()
+    initialize_db()
     server_address = ('', 8000)
     httpd = HTTPServer(server_address, RequestHandler)
     print("Running server...")

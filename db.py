@@ -1,25 +1,25 @@
 import sqlite3
 
-def inicializar_db():
-    conexion = sqlite3.connect('contrasenas.db')
-    cursor = conexion.cursor()
-    cursor.execute('''CREATE TABLE IF NOT EXISTS contrasenas
-                      (id INTEGER PRIMARY KEY, servicio TEXT, usuario TEXT, contrasena BLOB)''')
-    conexion.commit()
-    conexion.close()
+def initialize_db():
+    connection = sqlite3.connect('passwords.db')
+    cursor = connection.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS passwords
+                      (id INTEGER PRIMARY KEY, service TEXT, username TEXT, password BLOB)''')
+    connection.commit()
+    connection.close()
 
-def agregar_contrasena(servicio, usuario, contrasena_cifrada):
-    conexion = sqlite3.connect('contrasenas.db')
-    cursor = conexion.cursor()
-    cursor.execute("INSERT INTO contrasenas (servicio, usuario, contrasena) VALUES (?, ?, ?)",
-                   (servicio, usuario, contrasena_cifrada))
-    conexion.commit()
-    conexion.close()
+def add_password(service, username, encrypted_password):
+    connection = sqlite3.connect('passwords.db')
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO passwords (service, username, password) VALUES (?, ?, ?)",
+                   (service, username, encrypted_password))
+    connection.commit()
+    connection.close()
 
-def obtener_contrasenas():
-    conexion = sqlite3.connect('contrasenas.db')
-    cursor = conexion.cursor()
-    cursor.execute("SELECT servicio, usuario, contrasena FROM contrasenas")
-    filas = cursor.fetchall()
-    conexion.close()
-    return filas
+def get_passwords():
+    connection = sqlite3.connect('passwords.db')
+    cursor = connection.cursor()
+    cursor.execute("SELECT service, username, password FROM passwords")
+    rows = cursor.fetchall()
+    connection.close()
+    return rows
